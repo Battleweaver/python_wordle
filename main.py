@@ -8,7 +8,11 @@ pygame.init()
 
 WIDTH = 360
 HEIGHT = 640
-SQUARE_SIDE = 55
+SQUARE_SIDE = 56
+
+LETTER_X_SPACING = 50
+LETTER_Y_SPACING = 12
+LETTER_SIZE = 40
 
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -33,7 +37,7 @@ guesses_count = 0
 guesses = [[]] * 6
 current_guess = []
 current_guess_string = ""
-current_letter_bg_x = 90
+current_letter_bg_x = 50
 
 indicators = []
 
@@ -43,7 +47,17 @@ game_result = ""
 class Letter:
     def __init__(self, text, bg_position):
         # Initialises all the variables, including text, color, position, size, etc.
-        pass
+        self.bg_color = "white"
+        self.text_color = "black"
+        self.bg_position = bg_position
+        self.bg_x = bg_position[0]
+        self.bg_y = bg_position[1]
+        self.bg_rect = (bg_position[0], self.bg_y, LETTER_SIZE, LETTER_SIZE)
+        self.text = text
+        self.text_position = (self.bg_x+20, self.bg_position[1]+18)
+        self.text_surface = GUESSED_LETTER_FONT.render(self.text, True, self.text_color)
+        self.text_rect = self.text_surface.get_rect(self.text_position)
+
 
     def draw(self):
         # Puts the letter and text on the screen at the desired position
@@ -78,10 +92,22 @@ def reset():
 def create_new_letter():
     global current_guess_string, current_letter_bg_x
     current_guess_string += key_pressed
+    new_letter = Letter(key_pressed, (current_letter_bg_x, guesses_count*56 + LETTER_Y_SPACING))
+    current_letter_bg_x += LETTER_X_SPACING
+    guesses[guesses_count].append(new_letter)
+    current_guess.append(new_letter)
+    for guess in guesses:
+        for letter in guess:
+            letter.draw()
 
 
 def delete_letter():
-    pass
+    global current_guess_string, current_letter_bg_x
+    guesses[guesses_count][-1].delete()
+    guesses[guesses_count].pop()
+    current_guess_string = current_guess_string[:-1]
+    current_guess.pop()
+    current_letter_bg_x -= LETTER_X_SPACING
 
 
 while True:
