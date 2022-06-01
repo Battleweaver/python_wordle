@@ -76,7 +76,8 @@ def reset():
 
 
 def create_new_letter():
-    pass
+    global current_guess_string, current_letter_bg_x
+    current_guess_string += key_pressed
 
 
 def delete_letter():
@@ -91,3 +92,21 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                if game_result != "":
+                    reset()
+                else:
+                    if len(current_guess_string) == 5 and current_guess_string.lower() in words:
+                        check_guess(current_guess)
+
+            elif event.key == pygame.K_BACKSPACE:
+                if len(current_guess_string) > 0:
+                    delete_letter()
+            else:
+                key_pressed = event.unicode.upper()
+                if key_pressed in "QWERTYUIOPASDFGHJKLZXCVBNM" and key_pressed != "":
+                    if len(current_guess_string) < 5:
+                        create_new_letter()
+
